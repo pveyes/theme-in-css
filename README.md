@@ -1,6 +1,24 @@
-# theme-in-css
+<!-- markdownlint-disable MD026 MD033 MD041 -->
 
-> Type-safe CSS custom properties for theming purpose.
+<div align="center">
+
+[![theme-in-css](https://user-images.githubusercontent.com/1614415/80961549-5ba25e80-8e35-11ea-8ee3-0a709439f15a.png)](.)
+
+[![npm](https://badgen.net/npm/v/theme-in-css)](https://www.npmjs.com/package/theme-in-css)
+[![npm-dl](https://badgen.net/npm/dt/theme-in-css)](https://www.npmjs.com/package/theme-in-css)
+
+</div>
+
+---
+
+- [Why?](#why)
+- [Usage](#usage)
+- [CSS Integration](#css-integration)
+  - [.css.string: `string`](#cssstring-string)
+  - [.css.properties: `Array<[key: string, value: string]>`](#cssproperties-arraykey-string-value-string)
+- [License](#license)
+
+---
 
 ## Why?
 
@@ -50,7 +68,7 @@ function Component() {
     >
       <h1>It works</h1>
     </div>
-  )
+  );
 }
 ```
 
@@ -95,7 +113,7 @@ You can also use `.css.properties` if you want to update the CSS custom property
 const root = document.documentElement;
 
 theme.css.properties.forEach(([key, value]) => {
-  root.style.setProperty(key, value)
+  root.style.setProperty(key, value);
 });
 ```
 
@@ -105,6 +123,6 @@ If you prefer `Record<string, string>` instead, you can use `Object.fromEntries`
 const obj = Object.fromEntries(theme.css.properties);
 ```
 
-## License 
+## License
 
 MIT
