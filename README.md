@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![theme-in-css](./header.png)](.)
+[![theme-in-css](https://user-images.githubusercontent.com/1614415/80961549-5ba25e80-8e35-11ea-8ee3-0a709439f15a.png)](.)
 
 [![npm](https://badgen.net/npm/v/theme-in-css)](https://www.npmjs.com/package/theme-in-css)
 [![npm-dl](https://badgen.net/npm/dt/theme-in-css)](https://www.npmjs.com/package/theme-in-css)
