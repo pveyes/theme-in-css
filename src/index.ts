@@ -1,4 +1,10 @@
-type ThemeConfig = Record<string, Record<string, string | number>>;
+type ThemeValueMap = {
+  [key: string]: string | number;
+};
+
+type ThemeConfig = {
+  [key: string]: ThemeValueMap | ThemeConfig;
+};
 
 type ThemeCSSObject = {
   css: {
@@ -9,45 +15,77 @@ type ThemeCSSObject = {
 
 type ThemeVariables<T> = {
   [ck in keyof T]: {
-    [p in keyof T[ck]]: string;
+    [p in keyof T[ck]]: T[ck][p] extends Record<string, any>
+      ? ThemeVariables<T[ck][p]>
+      : string;
   };
 };
 
 type Theme<T> = ThemeVariables<T> & ThemeCSSObject;
 
 export function createTheme<T extends ThemeConfig>(config: T): Theme<T> {
-  const cssEntries = Object.keys(config).flatMap(configKey =>
-    Object.keys(config[configKey]).map(prop => {
-      const key = toCSSProperty(prop, configKey);
-      const value = toCSSValue(config[configKey][prop]);
-      return [key, value] as [string, string];
-    })
-  );
+  const cssEntries = generateCSSEntries(config);
+  const variables = createThemeVariables(config);
 
   const theme = {
     css: {
       string: cssEntries
-        .flatMap(([key, value]) => `${key}: ${value};`)
+        .flatMap(({ key, value }) => `${key}: ${value};`)
         .join('\n'),
-      properties: cssEntries,
+      properties: cssEntries.map(({ key, value }) => [key, value]) as Array<
+        [string, string]
+      >,
     },
   };
 
-  const value: ThemeVariables<T> = Object.keys(config).reduce(
-    (result, configKey) => {
-      result[configKey] = Object.keys(config[configKey]).reduce(
-        (vars, prop) => {
-          vars[prop] = toCSSVariable(prop, configKey);
-          return vars;
-        },
-        Object.create(null)
-      );
-      return result;
-    },
-    Object.create(null)
-  );
+  return Object.assign(theme, variables);
+}
 
-  return Object.assign(theme, value);
+function generateCSSEntries<T extends ThemeConfig>(
+  config: T
+): Array<{ key: string; value: string }> {
+  return Object.keys(config).flatMap(configKey => {
+    return createCSSEntries(config[configKey], configKey);
+  });
+}
+
+function createCSSEntries<T extends ThemeConfig | ThemeValueMap>(
+  map: T,
+  prefix = ''
+): Array<{ key: string; value: string }> {
+  return Object.keys(map)
+    .map(prop => {
+      const value = map[prop];
+      if (typeof value === 'string' || typeof value === 'number') {
+        const key = toCSSProperty(prop, prefix);
+        return { key, value: toCSSValue(value) };
+      }
+
+      return createCSSEntries(value, prefix + '-' + prop) as any;
+    })
+    .flat(Infinity);
+}
+
+function createThemeVariables<T extends ThemeConfig | ThemeValueMap>(
+  config: T,
+  prefix = ''
+): ThemeVariables<T> {
+  const variables = Object.create(null);
+
+  for (const key in config) {
+    const v = config[key];
+    if (typeof v === 'number' || typeof v === 'string') {
+      variables[key] = toCSSVariable(key, prefix);
+    } else {
+      // @ts-ignore
+      variables[key] = createThemeVariables(
+        v,
+        prefix === '' ? key : prefix + '-' + key
+      );
+    }
+  }
+
+  return variables;
 }
 
 function toCSSVariable(key: string, prefix: string) {

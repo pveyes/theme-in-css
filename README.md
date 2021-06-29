@@ -28,7 +28,7 @@
 
 ## Usage
 
-First create your theme object, you can group theme variables by its function (color, spacing, etc). Think of it as design token.
+First create your theme object, you can group theme variables by its function (color, spacing, etc). Think of it as design token
 
 ```ts
 import { createTheme } from 'theme-in-css';
@@ -45,6 +45,13 @@ export const Theme = createTheme({
     l: 16,
     xl: 32,
   },
+  typography: {
+    family: {
+      serif: 'Times New Roman',
+      sans: 'Calibri',
+      mono: 'Menlo',
+    },
+  }
 });
 
 // If you hate typing you can also use a shorter property name
@@ -64,6 +71,7 @@ function Component() {
         backgroundColor: Theme.color.darkPrimary,
         color: Theme.color.lightPrimary,
         margin: Theme.spacing.m,
+        fontFamily: Theme.typography.family.serif,
       }}
     >
       <h1>It works</h1>
