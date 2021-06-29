@@ -77,8 +77,8 @@ function createThemeVariables<T extends ThemeConfig | ThemeValueMap>(
     if (typeof v === 'number' || typeof v === 'string') {
       variables[key] = toCSSVariable(key, prefix);
     } else {
-      // @ts-ignore
       variables[key] = createThemeVariables(
+        // @ts-ignore
         v,
         prefix === '' ? key : prefix + '-' + key
       );
