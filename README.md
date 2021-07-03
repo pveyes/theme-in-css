@@ -24,7 +24,7 @@
 
 - **Strictly-typed design token, no more typo**. As you might know: CSS is forgiving, but in this case we don't want that. We want it to fail at compile time and this library gives you that
 - **Works in CSS and JS**. Using CSS custom properties means you can reference your design token in both CSS and JS. Separation of concern!
-- **Library agnostic**. The only purpose of this library is to provide type-safe CSS custom properties in your TS modules, nothing less, nothing more.
+- **UI Library agnostic**. The only purpose of this library is to provide type-safe CSS custom properties in your TS modules, nothing less, nothing more.
 
 ## Usage
 
@@ -58,16 +58,19 @@ export const Theme = createTheme({
 // const t = createTheme({ c: { l1: '#fff', d1: '#000' } });
 ```
 
-Then you can use this theme in your component, in this example we use React but it can also be used in any UI libraries:
+You can use any any UI libraries/framework that can define style in JS/TS, for example [React](https://reactjs.org) and [Lit](https://lit.dev/).
 
 ```tsx
-import * as React from 'react';
+// React
+import React from 'react';
 import { Theme } from './theme';
 
-function Component() {
+export default function Component() {
+  // use css prop via emotion/styled-components
+  // of course inline style works as well
   return (
     <div
-      style={{
+      css={{
         backgroundColor: Theme.color.darkPrimary,
         color: Theme.color.lightPrimary,
         margin: Theme.spacing.m,
@@ -78,6 +81,30 @@ function Component() {
     </div>
   );
 }
+
+// Lit
+// You need to wrap Theme inside `unsafeCSS`
+import { LitElement, html, css, unsafeCSS as cv } from 'lit';
+import { Theme } from './theme';
+
+export default class Component extends LitElement {
+  static styles = css`
+    div {
+      background-color: ${cv(Theme.color.darkPrimary)};
+      color: ${cv(Theme.color.lightPrimary)};
+      margin: ${cv(Theme.spacing.m)};
+      font-family: ${cv(Theme.typography.family.serif)};
+    }
+  `;
+
+  render() {
+    return html`
+      <div>
+        <h1>It works</h1>
+      </div>
+    `;
+  }
+}
 ```
 
 ## CSS Integration
@@ -86,7 +113,7 @@ If you only create theme and use them in your app, you'll notice that your app n
 
 ### .css.string: `string`
 
-`theme-in-css` provides `.css.string` property to dump the theme values as CSS properties. You can create 2 themes light and dark and dump them in different style declaration, like this:
+`theme-in-css` provides `.css.string` property to dump all theme values as CSS properties. You can create 2 themes light and dark and output them in different style declaration, like this:
 
 ```ts
 import { Theme, DarkTheme } from './theme';
