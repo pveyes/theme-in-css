@@ -1,29 +1,31 @@
-type ThemeValueMap = {
+interface ThemeValueMap {
   [key: string]: string | number;
 };
 
-type ThemeConfig = {
-  [key: string]: ThemeValueMap | ThemeConfig;
+interface ThemeConfig {
+  [token: string]: ThemeValueMap | ThemeConfig;
 };
 
-type ThemeCSSObject = {
+interface ThemeCSSObject {
   css: {
     string: string;
     properties: Array<[string, string]>;
   };
 };
 
-type ThemeVariables<T> = {
-  [ck in keyof T]: {
-    [p in keyof T[ck]]: T[ck][p] extends Record<string, any>
-      ? ThemeVariables<T[ck][p]>
-      : string;
-  };
+type ThemeVariableValueMap<Map> = {
+  [key in keyof Map]: Map[key] extends Record<string, any>
+  ? ThemeVariableValueMap<Map[key]>
+  : string;
+}
+
+type ThemeVariables<Theme> = {
+  [token in keyof Theme]: ThemeVariableValueMap<Theme[token]>
 };
 
-type Theme<T> = ThemeVariables<T> & ThemeCSSObject;
+type Theme<Shape> = ThemeVariables<Shape> & ThemeCSSObject;
 
-export function createTheme<T extends ThemeConfig>(config: T): Theme<T> {
+export function createTheme<Shape extends ThemeConfig>(config: Shape): Theme<Shape> {
   const cssEntries = generateCSSEntries(config);
   const variables = createThemeVariables(config);
 
