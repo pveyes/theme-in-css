@@ -1,7 +1,7 @@
 {
   "name": "theme-in-css",
   "author": "Fatih Kalifa",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/theme-in-css.esm.js",
