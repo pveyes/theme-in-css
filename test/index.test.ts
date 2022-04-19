@@ -31,6 +31,20 @@ describe('it', () => {
     ]);
   });
 
+  it('allow single depth', () => {
+    const theme = createTheme({
+      firstItem: 'lalalala',
+      secondItem: 12345
+    });
+
+    expect(theme.firstItem).toBe('var(--first-item)');
+    expect(theme.secondItem).toBe('var(--second-item)');
+    expect(theme.css.properties).toEqual([
+      ['--first-item', 'lalalala'],
+      ['--second-item', '12345px'],
+    ]);
+  })
+
   it('allow arbitrary depth', () => {
     const theme = createTheme({
       a: {

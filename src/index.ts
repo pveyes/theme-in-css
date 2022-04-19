@@ -1,9 +1,11 @@
+type ThemeValue = string | number;
+
 interface ThemeValueMap {
-  [key: string]: string | number;
+  [key: string]: ThemeValue;
 };
 
 interface ThemeConfig {
-  [token: string]: ThemeValueMap | ThemeConfig;
+  [token: string]: ThemeValueMap | ThemeConfig | ThemeValue;
 };
 
 interface ThemeCSSObject {
@@ -47,7 +49,12 @@ function generateCSSEntries<T extends ThemeConfig>(
   config: T
 ): Array<{ key: string; value: string }> {
   return Object.keys(config).flatMap(configKey => {
-    return createCSSEntries(config[configKey], configKey);
+    const value = config[configKey];
+    if (typeof value === 'object') {
+      return createCSSEntries(value, configKey);
+    }
+    
+    return { key: toCSSProperty(configKey, ''), value: toCSSValue(value) };
   });
 }
 
@@ -76,7 +83,7 @@ function createThemeVariables<T extends ThemeConfig | ThemeValueMap>(
 
   for (const key in config) {
     const v = config[key];
-    if (typeof v === 'number' || typeof v === 'string') {
+    if (typeof v !== 'object') {
       variables[key] = toCSSVariable(key, prefix);
     } else {
       variables[key] = createThemeVariables(
@@ -99,6 +106,10 @@ function camelCaseToHypen(str: string) {
 }
 
 function toCSSProperty(key: string, prefix: string) {
+  if (prefix == '') {
+    return `--${camelCaseToHypen(key)}`;
+  }
+
   return `--${prefix + '-' + camelCaseToHypen(key)}`;
 }
 
